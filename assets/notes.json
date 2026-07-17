@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Learn Dart basics",
+    "description": "Variables, types, functions, and null safety.",
+    "done": false
+  },
+  {
+    "title": "Understand widgets",
+    "description": "Everything in Flutter is a widget - stateless vs stateful.",
+    "done": true
+  },
+  {
+    "title": "Practice SQLite CRUD",
+    "description": "Insert, query, update and delete rows using sqflite.",
+    "done": false
+  },
+  {
+    "title": "Push to GitHub",
+    "description": "Set up a repo and commit the project history.",
+    "done": false
+  }
+]
