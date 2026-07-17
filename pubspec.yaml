@@ -43,6 +43,9 @@ dependencies:
   # adds an FFI-based SQLite implementation so the same code also runs on
   # Windows/Linux desktop (used automatically in database_helper.dart).
   sqflite_common_ffi: ^2.3.4+4
+  # WASM-based SQLite implementation so the same CRUD code also runs in
+  # the browser (Chrome/Edge web target).
+  sqflite_common_ffi_web: ^1.1.2
 
 dev_dependencies:
   flutter_test:

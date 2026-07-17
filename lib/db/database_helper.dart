@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import '../models/note.dart';
 
@@ -23,16 +24,22 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    // sqflite has no native SQLite engine for Windows/Linux desktop, so on
-    // those platforms swap in the FFI-based factory instead. Android, iOS,
-    // macOS and web keep using the default sqflite factory.
-    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    String path;
+    if (kIsWeb) {
+      // Browsers have no filesystem; sqflite_common_ffi_web stores the
+      // database in IndexedDB instead, keyed by this name.
+      databaseFactory = databaseFactoryFfiWeb;
+      path = 'notes.db';
+    } else if (Platform.isWindows || Platform.isLinux) {
+      // sqflite has no native SQLite engine for Windows/Linux desktop, so
+      // on those platforms swap in the FFI-based factory instead. Android,
+      // iOS and macOS keep using the default sqflite factory.
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
+      path = join(await getDatabasesPath(), 'notes.db');
+    } else {
+      path = join(await getDatabasesPath(), 'notes.db');
     }
-
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'notes.db');
 
     return openDatabase(
       path,

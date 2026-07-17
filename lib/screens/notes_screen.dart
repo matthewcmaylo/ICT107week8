@@ -20,6 +20,7 @@ class _NotesScreenState extends State<NotesScreen> {
   final _db = DatabaseHelper.instance;
   List<Note> _notes = [];
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -29,12 +30,22 @@ class _NotesScreenState extends State<NotesScreen> {
 
   // READ: reloads the list from SQLite and rebuilds the UI.
   Future<void> _refresh() async {
-    setState(() => _loading = true);
-    final notes = await _db.getAllNotes();
     setState(() {
-      _notes = notes;
-      _loading = false;
+      _loading = true;
+      _error = null;
     });
+    try {
+      final notes = await _db.getAllNotes();
+      setState(() {
+        _notes = notes;
+        _loading = false;
+      });
+    } catch (e, st) {
+      setState(() {
+        _error = '$e\n$st';
+        _loading = false;
+      });
+    }
   }
 
   // Opens the JSON asset bundled at assets/notes.json, decodes it, and bulk
@@ -179,7 +190,14 @@ class _NotesScreenState extends State<NotesScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _notes.isEmpty
+          : _error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SelectableText(_error!),
+                  ),
+                )
+              : _notes.isEmpty
               ? Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
